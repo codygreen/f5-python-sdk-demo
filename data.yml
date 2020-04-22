@@ -1,0 +1,30 @@
+dataCenters:
+  udf:
+    nameServers: 
+      - 8.8.8.8
+      - 8.8.4.4
+    dnsSearch:
+      - f5demos.com
+    ntpServers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - 2.pool.ntp.org
+    timezone: UTC
+bigips:
+  - hostname: ltm.f5demos.com
+    do_template: ltm_do
+    dataCenter: udf
+    internalSIP: 10.1.20.10/24
+    externalSIP: 10.1.10.10/24
+    defaultGateway: 10.1.10.254
+    bannerText: LTM
+    f5SdkHost: 10.1.1.6
+    f5SdkUsername: admin
+  - hostname: gtm.f5demos.com
+    do_template: gtm_do
+    dataCenter: udf
+    externalSIP: 10.1.10.4/24
+    defaultGateway: 10.1.10.254
+    bannerText: GTM
+    f5SdkHost: 10.1.1.5
+    f5SdkUsername: admin
