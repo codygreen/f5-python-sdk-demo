@@ -1,5 +1,6 @@
 # f5-python-sdk-demo
-Demo of how to use the F5 Python SDK to configure a BIG-IP
+Demo of how to use the F5 Python SDK to configure a BIG-IP DNS and BIG-IP LTM.
+This demo will perform both onboarding and application configuration tasks using the F5 Automation Toolchain.
 
 # Requirements
 This demo requires:
