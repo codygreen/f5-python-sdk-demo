@@ -1,0 +1,116 @@
+{
+    "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema.json",
+    "class": "AS3",
+    "action": "deploy",
+    "persist": true,
+    "declaration": {
+        "class": "ADC",
+        "schemaVersion": "3.19.0",
+        "id": "GSLB_Sample",
+        "Common": {
+            "class": "Tenant",
+            "Shared": {
+                "class": "Application",
+                "template": "shared",
+                "UDF": {
+                    "class": "GSLB_Data_Center"
+                },
+                "vs_monitor" : {
+                    "class" : "GSLB_Monitor",
+                    "monitorType": "tcp",
+                    "send" : ""
+                },
+                "LTM": {
+                    "class": "GSLB_Server",
+                    "dataCenter": {
+                        "use": "UDF"
+                    },
+                    "devices": [{
+                        "address": "{{ data.ltmExternalSIP }}"
+                    }],
+                    "virtualServers": [{
+                        "address": "{{ data.ltmVirtualServerAddress }}",
+                        "port": 80,
+                        "monitors" : [{
+                            "use": "vs_monitor"
+                        }]
+                    }],
+                    "serverType": "generic-host",
+                    "monitors": [{
+                        "use": "vs_monitor"
+                    }]
+                },
+                "GTM": {
+                    "class": "GSLB_Server",
+                    "dataCenter": {
+                        "use": "UDF"
+                    },
+                    "devices": [{
+                        "address": "{{ data.externalSIP[:-3] }}"
+                    }]
+                }   
+            }
+        },
+        "HEB": {
+            "class": "Tenant",
+            "Application": {
+                "class": "Application",
+                "template": "generic",
+                "testUDP": {
+                    "class": "Service_UDP",
+                    "virtualAddresses": [{% for virtualAddress in data.virtualAddresses %}
+                        "{{ virtualAddress }}"{{ "," if not loop.last }}{% endfor %}
+                    ],
+                    "virtualPort": 53,
+                    "profileDNS": {
+                        "bigip": "/Common/dns"
+                    },
+                    "profileUDP": {
+                        "bigip": "/Common/udp"
+                    }
+                },
+                "testTCP": {
+                    "class": "Service_TCP",
+                    "virtualAddresses": [{% for virtualAddress in data.virtualAddresses %}
+                        "{{ virtualAddress }}"{{ "," if not loop.last }}{% endfor %}
+                    ],
+                    "virtualPort": 53,
+                    "profileDNS": {
+                        "bigip": "/Common/dns"
+                    },
+                    "profileTCP": {
+                        "bigip": "/Common/tcp"
+                    }
+                },
+                "testDomain": {
+                    "class": "GSLB_Domain",
+                    "domainName": "{{ data.wipDomainName }}",
+                    "resourceRecordType": "A",
+                    "poolLbMode": "ratio",
+                    "pools": [{
+                        "use": "testPool"
+                    }]
+                },
+                "testMonitor": {
+                    "class": "GSLB_Monitor",
+                    "monitorType": "tcp",
+                    "send": ""
+                },
+                "testPool": {
+                    "class": "GSLB_Pool",
+                    "members": [{
+                        "ratio": 10,
+                        "server": {
+                            "use": "/Common/Shared/LTM"
+                        },
+                        "virtualServer": "0"
+                    }],
+                    "monitors": [{
+                        "use": "testMonitor"
+                    }],
+                    "resourceRecordType": "A"
+                }
+            }
+        }
+    }
+}

@@ -13,22 +13,24 @@ from f5sdk.logger import Logger
 LOGGER = Logger(__name__).get_logger()
 
 
-def create_do_declaration(data):
+def create_declaration(data, atc_type):
     """ 
-    create DO declaration from environment variables
+    create automation toolchain declaration 
     """
+    print(data)
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
 
-    # load the DO GTM template
-    template = env.get_template(data['do_template']+'.j2')
+    # load the template
+    template_type = "as3_template"  if atc_type == "as3" else "do_template"
+    template = env.get_template(data[template_type]+'.j2') 
 
     # render the template
     output = template.render(data = data)
 
     # write the template to file
-    LOGGER.info('writing DO declaration for {}'.format(data['hostname']))
-    f = open('./files/{}.do.json'.format(data['hostname'].split('.')[0]), 'w')
+    LOGGER.info('writing declaration for {}'.format(data['hostname']))
+    f = open('./files/{}.{}.json'.format(data['hostname'].split('.')[0], atc_type), 'w')
     f.write(output)
     f.close()
     return True
@@ -38,7 +40,7 @@ if __name__ == '__main__':
     inputfile = ''
     bigip_data = {}
     try:
-        # Set BIG-IP data from environment variables
+        # Ensure data file is provided
         if len(sys.argv) == 1:
             print("Please provide a yaml file containing variables.\nExample:\n")
             print("python3 bigip.py data.yml\n")
@@ -54,4 +56,5 @@ if __name__ == '__main__':
 
     # Loop through the BIG-IPs
     for bigip in bigip_data['bigips']:
-        LOGGER.info(create_do_declaration({ **bigip,  **bigip_data['dataCenters'][bigip['dataCenter']] }))
+        LOGGER.info(create_declaration({ **bigip,  **bigip_data['dataCenters'][bigip['dataCenter']] },"do"))
+        LOGGER.info(create_declaration(bigip, "as3"))
