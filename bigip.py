@@ -17,7 +17,6 @@ def create_do_declaration(data):
     """ 
     create DO declaration from environment variables
     """
-    print(data)
     file_loader = FileSystemLoader('templates')
     env = Environment(loader=file_loader)
 
@@ -26,13 +25,6 @@ def create_do_declaration(data):
 
     # render the template
     output = template.render(data = data)
-
-    # ensure the JSON is valid
-    # json.loads(output)
-    # schema = json.loads(requests.get(
-    #     "https://raw.githubusercontent.com/F5Networks/f5-declarative-onboarding/master/src/schema/latest/base.schema.json").text)
-    # # jsonschema.IValidator(output, schema)
-    # jsonschema.Draft3Validator(schema).validate(output)
 
     # write the template to file
     LOGGER.info('writing DO declaration for {}'.format(data['hostname']))
@@ -56,14 +48,10 @@ if __name__ == '__main__':
             stream = open(inputfile, 'r')
             bigip_data = yaml.load(stream, Loader=yaml.BaseLoader)
             stream.close()
-        # print(bigip_data)
     except OSError as err:
         print(str(err))
         sys.exit(2)
 
     # Loop through the BIG-IPs
     for bigip in bigip_data['bigips']:
-        # print(type(bigip))
-        # print(bigip)
-        # print(bigip_data['dataCenters'][bigip['dataCenter']])
         LOGGER.info(create_do_declaration({ **bigip,  **bigip_data['dataCenters'][bigip['dataCenter']] }))
