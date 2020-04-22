@@ -1,0 +1,12 @@
+dataCenters:
+  udf:
+    nameServers: 
+      - 8.8.8.8
+      - 8.8.4.4
+    dnsSearch:
+      - f5demos.com
+    ntpServers:
+      - 0.pool.ntp.org
+      - 1.pool.ntp.org
+      - 2.pool.ntp.org
+    timezone: UTC

@@ -1,0 +1,15 @@
+bigips:
+  - hostname: gtm.f5demos.com
+    as3_template: gtm_as3
+    do_template: gtm_do
+    dataCenter: udf
+    externalSIP: 10.1.10.4/24
+    defaultGateway: 10.1.10.254
+    bannerText: GTM
+    ltmExternalSIP: 10.1.10.10
+    ltmVirtualServerAddress: 10.1.10.11
+    virtualAddresses: 
+      - 10.1.10.5
+    wipDomainName: test.f5demos.com
+    f5SdkHost: 10.1.1.5
+    f5SdkUsername: admin

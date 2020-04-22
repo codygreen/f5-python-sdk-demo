@@ -1,0 +1,6 @@
+datacenters: 
+  - udf
+virtualAddresses:
+  - 10.1.10.11
+serverAddresses:
+  - 10.1.20.20

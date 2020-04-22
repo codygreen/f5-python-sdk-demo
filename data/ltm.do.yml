@@ -1,0 +1,11 @@
+bigips:
+  - hostname: ltm.f5demos.com
+    as3_template: ltm_as3
+    do_template: ltm_do
+    dataCenter: udf
+    internalSIP: 10.1.20.10/24
+    externalSIP: 10.1.10.10/24
+    defaultGateway: 10.1.10.254
+    bannerText: LTM
+    f5SdkHost: 10.1.1.6
+    f5SdkUsername: admin
