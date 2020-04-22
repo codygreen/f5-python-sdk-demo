@@ -85,7 +85,7 @@ if __name__ == '__main__':
 
     # Loop through the BIG-IPs
     for bigip in bigip_data['bigips']:
-        LOGGER.info(create_declaration({ **bigip,  **bigip_data['dataCenters'][bigip['dataCenter']] },"do"))
+        # LOGGER.info(create_declaration({ **bigip,  **bigip_data['dataCenters'][bigip['dataCenter']] },"do"))
         LOGGER.info(create_declaration(bigip, "as3"))
-        LOGGER.info(update_config(bigip, "do"))
+        # LOGGER.info(update_config(bigip, "do"))
         LOGGER.info(update_config(bigip, "as3"))

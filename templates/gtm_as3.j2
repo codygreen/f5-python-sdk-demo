@@ -20,26 +20,30 @@
                     "monitorType": "tcp",
                     "send" : ""
                 },
-                "LTM": {
+                {% for server in data.servers %}
+                "{{ server.name }}": {
                     "class": "GSLB_Server",
                     "dataCenter": {
-                        "use": "UDF"
+                        "use": "{{ server.dataCenter }}"
                     },
                     "devices": [{
-                        "address": "{{ data.ltmExternalSIP }}"
+                        "address": "{{ server.address }}"
                     }],
-                    "virtualServers": [{
-                        "address": "{{ data.ltmVirtualServerAddress }}",
+                    "virtualServers": [{% for virtualServer in server.virtaulServers %}
+                        {
+                        "address": "{{ virtualServer }}",
                         "port": 80,
                         "monitors" : [{
                             "use": "vs_monitor"
                         }]
-                    }],
+                    }
+                    {{ "," if not loop.last }}{% endfor %}],
                     "serverType": "generic-host",
                     "monitors": [{
                         "use": "vs_monitor"
                     }]
                 },
+                {% endfor %}
                 "GTM": {
                     "class": "GSLB_Server",
                     "dataCenter": {
@@ -82,34 +86,38 @@
                         "bigip": "/Common/tcp"
                     }
                 },
-                "testDomain": {
+                {% for wip in data.wipDomainNames %}
+                "{{ wip.name }}": {
                     "class": "GSLB_Domain",
-                    "domainName": "{{ data.wipDomainName }}",
+                    "domainName": "{{ wip.name }}",
                     "resourceRecordType": "A",
                     "poolLbMode": "ratio",
-                    "pools": [{
-                        "use": "testPool"
-                    }]
+                    "pools": [{% for pool in wip.pools %}{
+                        "use": "{{ pool }}"
+                    }{{ "," if not loop.last }}{% endfor %}]
                 },
+                {% endfor %}
                 "testMonitor": {
                     "class": "GSLB_Monitor",
                     "monitorType": "tcp",
                     "send": ""
                 },
-                "testPool": {
+                {% for pool in data.pools %}
+                "{{ pool.name }}": {
                     "class": "GSLB_Pool",
-                    "members": [{
+                    "members": [{% for member in pool.members %}{
                         "ratio": 10,
                         "server": {
-                            "use": "/Common/Shared/LTM"
+                            "use": "/Common/Shared/{{ member }}"
                         },
                         "virtualServer": "0"
-                    }],
+                    }{{ "," if not loop.last }}{% endfor %}],
                     "monitors": [{
                         "use": "testMonitor"
                     }],
                     "resourceRecordType": "A"
                 }
+                {% endfor %}
             }
         }
     }
